@@ -16,10 +16,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch index",
+      "name": "Launch cli",
       "program": "${workspaceFolder}/node_modules/.bin/ts-node",
       "args": [
-        "src/index.ts"
+        "src/cli.ts",
+        "start",
+        "--version",
+        "0.17.0"
       ]
     },
   ]

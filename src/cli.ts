@@ -1,11 +1,9 @@
-import { cli, option, command } from '@carnesen/cli';
+import { cli, option, leaf, branch } from '@carnesen/cli';
 import { BITCOIN_CONFIG_OPTIONS } from '@carnesen/bitcoin-config';
-
-import { installBitcoinCore, uninstallBitcoinCore } from './software';
-import { spawnBitcoind } from './spawn';
 import { DEFAULT_VERSION } from './constants';
+import { uninstallBitcoinCore, installBitcoinCore } from './software';
+import { startBitcoind } from './spawn';
 import { getSoftwareName } from './util';
-const pkg = require('../package.json');
 
 const versionOptions = {
   version: option({
@@ -14,59 +12,49 @@ const versionOptions = {
     defaultValue: DEFAULT_VERSION,
   }),
 };
+const datadirOptions = {
+  datadir: option(BITCOIN_CONFIG_OPTIONS.datadir),
+};
 
-const { regtest, testnet } = BITCOIN_CONFIG_OPTIONS;
-
-const rootCommand = command({
+export const rootCommand = branch({
   commandName: 'bitcoin-core',
-  description: `A command-line interface for ${pkg.name}`,
+  description: `A command-line interface (CLI) for Bitcoin Core`,
   subcommands: [
-    command({
+    leaf({
       commandName: 'install',
-      options: { ...versionOptions },
-      async action({ version }) {
-        const alreadyInstalled = await installBitcoinCore(version);
+      options: { ...versionOptions, ...datadirOptions },
+      async action({ version, datadir }) {
+        await installBitcoinCore({ version, datadir });
         const softwareName = getSoftwareName(version);
-        const message = alreadyInstalled
-          ? `Found ${softwareName} already installed`
-          : `Installed ${softwareName}!`;
-        return message;
+        return `${softwareName} is installed!`;
       },
     }),
-    command({
+    leaf({
       commandName: 'uninstall',
-      options: versionOptions,
-      async action({ version }) {
-        const alreadyUninstalled = await uninstallBitcoinCore(version);
-        const softwareName = getSoftwareName(version);
-        const message = alreadyUninstalled
-          ? `Found ${softwareName} already uninstalled`
-          : `Uninstalled ${softwareName}!`;
-        return message;
+      options: { ...versionOptions, ...datadirOptions },
+      async action({ version, datadir }) {
+        await uninstallBitcoinCore({ version, datadir });
+        return `${getSoftwareName(version)} is uninstalled!`;
       },
     }),
-    command({
-      commandName: 'spawn',
+    leaf({
+      commandName: 'start',
       options: {
         ...versionOptions,
-        regtest,
-        testnet,
+        ...datadirOptions,
+        daemon: option(BITCOIN_CONFIG_OPTIONS.daemon),
+        regtest: option(BITCOIN_CONFIG_OPTIONS.regtest),
+        testnet: option(BITCOIN_CONFIG_OPTIONS.testnet),
+        config: option({
+          typeName: 'json',
+          description: 'Additional bitcoin configuration options',
+          defaultValue: {},
+        }),
       },
-      async action({ version, ...bitcoinConfig }) {
-        await new Promise((_, reject) => {
-          const spawned = spawnBitcoind({
-            version,
-            bitcoinConfig,
-            spawnOptions: {
-              stdio: 'inherit',
-            },
-          });
-          spawned.on('exit', (code, signal) => {
-            reject(`Process exited with code=${code}, signal=${signal}`);
-          });
-          spawned.on('error', err => {
-            reject(err);
-          });
+      async action({ version, config, ...rest }) {
+        await startBitcoind({
+          version,
+          bitcoinConfig: { ...config, ...rest },
         });
       },
     }),

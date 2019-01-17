@@ -1,9 +1,8 @@
 import { join } from 'path';
+import { toAbsolute } from '@carnesen/bitcoin-config';
 
-import { SOFTWARE_DIR } from './constants';
-
-export function getSoftwareVersionDir(version: string) {
-  return join(SOFTWARE_DIR, `bitcoin-${version}`);
+export function getSoftwareVersionDir(version: string, datadir?: string) {
+  return toAbsolute(join('software', `bitcoin-${version}`), datadir);
 }
 
 export function getSoftwareName(version: string) {

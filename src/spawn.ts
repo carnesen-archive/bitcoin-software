@@ -1,42 +1,73 @@
 import { platform } from 'os';
-import { join } from 'path';
-import { spawn, SpawnOptions } from 'child_process';
+import { join, dirname } from 'path';
+import { spawn } from 'child_process';
 
 import mkdirp = require('mkdirp');
 import signalExit = require('signal-exit');
+
+import CodedError = require('@carnesen/coded-error');
 
 import {
   SectionedConfig,
   writeConfigFile,
   DEFAULT_CONFIG_FILE_NAME,
+  toAbsolute,
 } from '@carnesen/bitcoin-config';
-import { getSoftwareVersionDir } from './util';
-import { DATA_DIR, DEFAULT_VERSION } from './constants';
+import { getSoftwareVersionDir, getSoftwareName } from './util';
+import { DEFAULT_VERSION } from './constants';
+import { UsageError } from '@carnesen/cli';
 
 type Options = Partial<{
   version: string;
   bitcoinConfig: SectionedConfig;
-  spawnOptions: SpawnOptions;
 }>;
 
-export function spawnBitcoind(options: Options = {}) {
-  const { version = DEFAULT_VERSION, bitcoinConfig = {}, spawnOptions = {} } = options;
-  const softwareVersionDir = getSoftwareVersionDir(version);
-  let binFilePath = join(softwareVersionDir, 'bin', 'bitcoind');
-  if (platform() === 'win32') {
-    binFilePath += '.exe';
-  }
-  mkdirp.sync(DATA_DIR);
-  const configFilePath = join(DATA_DIR, DEFAULT_CONFIG_FILE_NAME);
-  writeConfigFile(configFilePath, { daemon: false, datadir: DATA_DIR, ...bitcoinConfig });
-  const spawned = spawn(binFilePath, [`-conf=${configFilePath}`], {
-    stdio: 'ignore',
-    ...spawnOptions,
-  });
+export function startBitcoind(options: Options = {}): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const { version = DEFAULT_VERSION, bitcoinConfig = {} } = options;
+    const { daemon } = bitcoinConfig;
+    const softwareVersionDir = getSoftwareVersionDir(version, bitcoinConfig.datadir);
+    let binFilePath = join(softwareVersionDir, 'bin', 'bitcoind');
+    if (platform() === 'win32') {
+      binFilePath += '.exe';
+    }
+    const confFilePath = toAbsolute(DEFAULT_CONFIG_FILE_NAME, bitcoinConfig.datadir);
+    mkdirp.sync(dirname(confFilePath));
+    writeConfigFile(confFilePath, bitcoinConfig);
+    const spawned = spawn(binFilePath, [`-conf=${confFilePath}`], {
+      stdio: 'inherit',
+    });
 
-  signalExit(() => {
-    spawned.kill();
-  });
+    if (!daemon) {
+      // Kill child when parent exits
+      signalExit(() => {
+        spawned.kill();
+      });
+    }
 
-  return spawned;
+    spawned.on('error', err => {
+      if ((err as CodedError).code === 'ENOENT') {
+        reject(
+          new UsageError(
+            `${err.message}: Did you install ${getSoftwareName(
+              version,
+            )}? Try a different --datadir?`,
+          ),
+        );
+      } else {
+        reject(err);
+      }
+    });
+
+    spawned.on('exit', code => {
+      if (daemon) {
+        if (code === 0) {
+          resolve();
+        } else {
+          // Assume bitcoind has printed an error message
+          reject('');
+        }
+      }
+    });
+  });
 }
