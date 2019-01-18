@@ -5,15 +5,13 @@ import { uninstallBitcoinCore, installBitcoinCore } from './software';
 import { startBitcoind } from './spawn';
 import { getSoftwareName } from './util';
 
-const versionOptions = {
+const universalOptions = {
+  datadir: option(BITCOIN_CONFIG_OPTIONS.datadir),
   version: option({
     typeName: 'string',
     description: 'Version string',
     defaultValue: DEFAULT_VERSION,
   }),
-};
-const datadirOptions = {
-  datadir: option(BITCOIN_CONFIG_OPTIONS.datadir),
 };
 
 export const rootCommand = branch({
@@ -22,7 +20,7 @@ export const rootCommand = branch({
   subcommands: [
     leaf({
       commandName: 'install',
-      options: { ...versionOptions, ...datadirOptions },
+      options: { ...universalOptions },
       async action({ version, datadir }) {
         await installBitcoinCore({ version, datadir });
         const softwareName = getSoftwareName(version);
@@ -31,7 +29,7 @@ export const rootCommand = branch({
     }),
     leaf({
       commandName: 'uninstall',
-      options: { ...versionOptions, ...datadirOptions },
+      options: { ...universalOptions },
       async action({ version, datadir }) {
         await uninstallBitcoinCore({ version, datadir });
         return `${getSoftwareName(version)} is uninstalled!`;
@@ -40,8 +38,7 @@ export const rootCommand = branch({
     leaf({
       commandName: 'start',
       options: {
-        ...versionOptions,
-        ...datadirOptions,
+        ...universalOptions,
         daemon: option(BITCOIN_CONFIG_OPTIONS.daemon),
         regtest: option(BITCOIN_CONFIG_OPTIONS.regtest),
         testnet: option(BITCOIN_CONFIG_OPTIONS.testnet),

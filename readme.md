@@ -1,6 +1,6 @@
 # @carnesen/bitcoin-core
 
-A Node.js library for installing and launching Bitcoin Core
+A Node.js command-line interface (CLI) for installing and launching Bitcoin Core
 
 ## Install
 
