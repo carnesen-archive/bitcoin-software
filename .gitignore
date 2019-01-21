@@ -1,5 +1,8 @@
 ### Node ###
 
+# TODO REMOVE
+package-lock.json
+
 # Code coverage reports
 /coverage
 

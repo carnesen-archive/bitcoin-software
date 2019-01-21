@@ -1,6 +1,7 @@
 {
-  "name": "@carnesen/bitcoin-core",
-  "description": "Download and spawn Bitcoin Core",
+  "name": "@carnesen/bitcoin-software",
+  "description": "Node.js utilities to download and install bitcoin server software",
+  "private": true,
   "version": "0.0.0-0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,11 +11,10 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "build:clean": "rimraf lib && npm run build",
-    "cli": "ts-node src/cli.ts",
     "lint": "tslint --project .",
     "lint:fix": "npm run lint -- --fix",
     "test": "npm run lint && npm run test:unit && npm run build",
-    "test:unit": "jest",
+    "test:unit": "jest src",
     "test:unit:coverage": "npm run test:unit -- --coverage",
     "test:unit:coverage:watch": "npm run test:unit -- --coverage --watch",
     "test:unit:watch": "npm run test:unit -- --watch",
@@ -23,37 +23,36 @@
   },
   "dependencies": {
     "@carnesen/bitcoin-config": "0.0.0-3",
-    "@carnesen/cli": "0.1.2",
-    "@carnesen/coded-error": "0.0.0",
     "@types/download": "6.2.4",
     "@types/mkdirp": "0.5.2",
     "@types/rimraf": "2.0.2",
-    "@types/signal-exit": "3.0.0",
     "download": "7.1.0",
     "mkdirp": "0.5.1",
-    "rimraf": "2.6.3",
-    "signal-exit": "3.0.2"
+    "rimraf": "2.6.3"
   },
   "devDependencies": {
-    "@carnesen/run-and-exit": "0.1.0",
     "@carnesen/tsconfig": "0.1.0",
     "@carnesen/tslint-config": "0.1.2",
-    "@types/jest": "23.3.12",
+    "@types/jest": "23.3.13",
+    "@types/nock": "9.3.0",
     "@types/node": "10.12.18",
+    "@types/tempy": "0.2.0",
     "jest": "23.6.0",
+    "nock": "10.0.6",
+    "tempy": "0.2.1",
     "ts-jest": "23.10.5",
     "ts-node": "7.0.1",
     "tslint": "5.12.1",
-    "typescript": "3.2.2"
+    "typescript": "3.2.4"
   },
   "author": {
     "name": "Chris Arnesen",
     "email": "chris.arnesen@gmail.com"
   },
-  "repository": "git://github.com/carnesen/bitcoin-core.git",
+  "repository": "git://github.com/carnesen/bitcoin-software.git",
   "bugs": {
-    "url": "https://github.com/carnesen/bitcoin-core/issues"
+    "url": "https://github.com/carnesen/bitcoin-software/issues"
   },
-  "homepage": "https://github.com/carnesen/bitcoin-core",
+  "homepage": "https://github.com/carnesen/bitcoin-software",
   "license": "MIT"
 }
