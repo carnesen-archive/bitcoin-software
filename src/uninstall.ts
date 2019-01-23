@@ -1,18 +1,21 @@
 import { promisify } from 'util';
+import { existsSync } from 'fs';
 
 import rimraf = require('rimraf');
 
-import { getDir } from './get-dir';
-import { Implementation, DEFAULT_SOFTWARE_DIR } from './constants';
+import { getInstalledDir } from './get-installed-dir';
+import { Target } from './constants';
 
-type NamedArgs = {
-  version: string;
-  implementation: Implementation;
-  softwareDir?: string;
-};
-
-export async function uninstall(namedArgs: NamedArgs) {
-  const { version, implementation, softwareDir = DEFAULT_SOFTWARE_DIR } = namedArgs;
-  const dir = getDir({ version, implementation, softwareDir });
-  await promisify(rimraf)(dir);
+export async function uninstall(target: Target) {
+  const { version, implementation, destination } = target;
+  const installedDir = getInstalledDir({ version, implementation, destination });
+  let changed = false;
+  if (existsSync(installedDir)) {
+    changed = true;
+    await promisify(rimraf)(installedDir);
+  }
+  return {
+    changed,
+    installedDir,
+  };
 }

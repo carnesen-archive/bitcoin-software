@@ -1,14 +1,13 @@
 import { join } from 'path';
-import { toAbsolute } from '@carnesen/bitcoin-config';
 import { Implementation } from './constants';
 
-export function getDir(namedArgs: {
+export function getInstalledDir(namedArgs: {
   version: string;
   implementation: Implementation;
-  softwareDir: string;
+  destination: string;
 }) {
   return join(
-    toAbsolute(namedArgs.softwareDir),
+    namedArgs.destination,
     `bitcoin-${namedArgs.implementation}-${namedArgs.version}`,
   );
 }

@@ -6,31 +6,36 @@ import download = require('download');
 import rimraf = require('rimraf');
 import mkdirp = require('mkdirp');
 
-import { getDir } from './get-dir';
-import { Implementation, DEFAULT_SOFTWARE_DIR } from './constants';
+import { getInstalledDir } from './get-installed-dir';
+import { Target } from './constants';
 import { getUrl } from './get-url';
+import { getTarballPrefix } from './get-tarball-prefix';
 
-type NamedArgs = {
-  version: string;
-  implementation: Implementation;
-  softwareDir?: string;
-};
+const rimrafAsync = promisify(rimraf);
 
-export async function install(namedArgs: NamedArgs) {
-  const { implementation, version, softwareDir = DEFAULT_SOFTWARE_DIR } = namedArgs;
-  const dir = getDir({ version, implementation, softwareDir });
-  if (!existsSync(dir)) {
-    // Download the file to softwareDir instead of /tmp for example so that
-    // we can be reasonably sure that downloadsDir is on the same disk
-    // as softwareDir and therefore the rename below is atomic.
-    const downloadsDir = join(dirname(dir), 'downloads');
+export async function install(target: Target) {
+  const { implementation, version, destination } = target;
+  const installedDir = getInstalledDir({ version, implementation, destination });
+  let changed = false;
+  if (!existsSync(installedDir)) {
+    changed = true;
+    const downloadDir = `${installedDir}.download`;
+    await rimrafAsync(downloadDir);
     const url = getUrl({ version, implementation });
-    const extractedDir = join(downloadsDir, `bitcoin-${version}`);
-    await promisify(rimraf)(extractedDir);
-    await download(url, downloadsDir, {
-      extract: true,
-    });
-    await promisify(mkdirp)(dirname(dir));
-    await promisify(rename)(extractedDir, dir);
+    try {
+      await download(url, downloadDir, {
+        extract: true,
+      });
+      const tarballPrefix = getTarballPrefix(implementation);
+      const extractedDir = join(downloadDir, `${tarballPrefix}-${version}`);
+      await promisify(mkdirp)(dirname(installedDir));
+      await promisify(rename)(extractedDir, installedDir);
+    } finally {
+      await rimrafAsync(downloadDir);
+    }
   }
+  return {
+    changed,
+    installedDir,
+  };
 }

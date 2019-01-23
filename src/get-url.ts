@@ -1,6 +1,7 @@
 import { platform } from 'os';
 
 import { Implementation } from './constants';
+import { getTarballPrefix } from './get-tarball-prefix';
 
 type NamedArgs = {
   version: string;
@@ -12,7 +13,6 @@ export function getUrl(namedArgs: NamedArgs) {
   const { version, implementation, nodejsPlatform = platform() } = namedArgs;
   let baseUrl: string;
   let osSeparator: string;
-  let fileNameBase: string;
   switch (nodejsPlatform) {
     case 'darwin':
     case 'linux':
@@ -23,12 +23,10 @@ export function getUrl(namedArgs: NamedArgs) {
   switch (implementation) {
     case 'core':
       baseUrl = 'https://bitcoincore.org/bin/bitcoin-core-';
-      fileNameBase = 'bitcoin';
       osSeparator = '';
       break;
     case 'abc':
       baseUrl = 'https://download.bitcoinabc.org/';
-      fileNameBase = 'bitcoin-abc';
       switch (nodejsPlatform) {
         case 'darwin':
           osSeparator = 'osx/';
@@ -51,5 +49,6 @@ export function getUrl(namedArgs: NamedArgs) {
       fileNameSuffix = 'x86_64-linux-gnu.tar.gz';
       break;
   }
-  return `${baseUrl}${version}/${osSeparator!}${fileNameBase}-${version}-${fileNameSuffix!}`;
+  const tarballPrefix = getTarballPrefix(implementation);
+  return `${baseUrl}${version}/${osSeparator!}${tarballPrefix}-${version}-${fileNameSuffix!}`;
 }
