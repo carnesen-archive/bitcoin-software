@@ -43,7 +43,7 @@ Installing Bitcoin Core ...
 Bitcoin Core is already installed at /Users/carnesen/bitcoin-core-0.17.1
 ```
 
-The script would look exactly the same in JavaScript just with the `import ... from` statements replaced by `const ... require` ones.
+The script would be the same in JavaScript just with the `import ... from` statements replaced by `const ... require` ones.
 
 ## API
 
