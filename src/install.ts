@@ -7,7 +7,7 @@ import download = require('download');
 import rimraf = require('rimraf');
 import mkdirp = require('mkdirp');
 
-import { getInstalledDir } from './get-installed-dir';
+import { getBitcoinHome } from './get-bitcoin-home';
 import { Target } from './constants';
 import { getUrl } from './get-url';
 import { getTarballPrefix } from './get-tarball-prefix';
@@ -16,14 +16,14 @@ const rimrafAsync = promisify(rimraf);
 
 export async function install(target: Target) {
   const { implementation, version, destination } = target;
-  const dir = getInstalledDir({ version, implementation, destination });
+  const bitcoinHome = getBitcoinHome({ version, implementation, destination });
   if (!existsSync(destination)) {
     throw new UsageError(`Expected "destination" to be an existing directory`);
   }
   let changed = false;
-  if (!existsSync(dir)) {
+  if (!existsSync(bitcoinHome)) {
     changed = true;
-    const downloadDir = `${dir}.download`;
+    const downloadDir = `${bitcoinHome}.download`;
     await rimrafAsync(downloadDir);
     const url = getUrl({ version, implementation });
     try {
@@ -32,14 +32,14 @@ export async function install(target: Target) {
       });
       const tarballPrefix = getTarballPrefix(implementation);
       const extractedDir = join(downloadDir, `${tarballPrefix}-${version}`);
-      await promisify(mkdirp)(dirname(dir));
-      await promisify(rename)(extractedDir, dir);
+      await promisify(mkdirp)(dirname(bitcoinHome));
+      await promisify(rename)(extractedDir, bitcoinHome);
     } finally {
       await rimrafAsync(downloadDir);
     }
   }
   return {
     changed,
-    dir,
+    bitcoinHome,
   };
 }

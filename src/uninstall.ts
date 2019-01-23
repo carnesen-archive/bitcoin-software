@@ -3,19 +3,19 @@ import { existsSync } from 'fs';
 
 import rimraf = require('rimraf');
 
-import { getInstalledDir } from './get-installed-dir';
+import { getBitcoinHome } from './get-bitcoin-home';
 import { Target } from './constants';
 
 export async function uninstall(target: Target) {
   const { version, implementation, destination } = target;
-  const installedDir = getInstalledDir({ version, implementation, destination });
+  const bitcoinHome = getBitcoinHome({ version, implementation, destination });
   let changed = false;
-  if (existsSync(installedDir)) {
+  if (existsSync(bitcoinHome)) {
     changed = true;
-    await promisify(rimraf)(installedDir);
+    await promisify(rimraf)(bitcoinHome);
   }
   return {
     changed,
-    installedDir,
+    bitcoinHome,
   };
 }

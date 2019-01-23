@@ -1,11 +1,9 @@
 import { platform } from 'os';
 
-import { Implementation } from './constants';
+import { Target } from './constants';
 import { getTarballPrefix } from './get-tarball-prefix';
 
-type NamedArgs = {
-  version: string;
-  implementation: Implementation;
+type NamedArgs = Pick<Target, 'version' | 'implementation'> & {
   nodejsPlatform?: NodeJS.Platform;
 };
 
