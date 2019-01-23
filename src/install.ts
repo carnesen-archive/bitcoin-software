@@ -15,11 +15,11 @@ const rimrafAsync = promisify(rimraf);
 
 export async function install(target: Target) {
   const { implementation, version, destination } = target;
-  const installedDir = getInstalledDir({ version, implementation, destination });
+  const dir = getInstalledDir({ version, implementation, destination });
   let changed = false;
-  if (!existsSync(installedDir)) {
+  if (!existsSync(dir)) {
     changed = true;
-    const downloadDir = `${installedDir}.download`;
+    const downloadDir = `${dir}.download`;
     await rimrafAsync(downloadDir);
     const url = getUrl({ version, implementation });
     try {
@@ -28,14 +28,14 @@ export async function install(target: Target) {
       });
       const tarballPrefix = getTarballPrefix(implementation);
       const extractedDir = join(downloadDir, `${tarballPrefix}-${version}`);
-      await promisify(mkdirp)(dirname(installedDir));
-      await promisify(rename)(extractedDir, installedDir);
+      await promisify(mkdirp)(dirname(dir));
+      await promisify(rename)(extractedDir, dir);
     } finally {
       await rimrafAsync(downloadDir);
     }
   }
   return {
     changed,
-    installedDir,
+    dir,
   };
 }
