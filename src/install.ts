@@ -2,6 +2,7 @@ import { join, dirname } from 'path';
 import { promisify } from 'util';
 import { rename, existsSync } from 'fs';
 
+import { UsageError } from '@carnesen/usage-error';
 import download = require('download');
 import rimraf = require('rimraf');
 import mkdirp = require('mkdirp');
@@ -16,6 +17,9 @@ const rimrafAsync = promisify(rimraf);
 export async function install(target: Target) {
   const { implementation, version, destination } = target;
   const dir = getInstalledDir({ version, implementation, destination });
+  if (!existsSync(destination)) {
+    throw new UsageError(`Expected "destination" to be an existing directory`);
+  }
   let changed = false;
   if (!existsSync(dir)) {
     changed = true;

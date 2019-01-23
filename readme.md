@@ -10,7 +10,7 @@ The package includes runtime JavaScript files suitable for Node.js >=8 as well a
 
 ## Usage
 
-A JavaScript script that installs Bitcoin Core:
+Here is an example of a JavaScript script that installs Bitcoin Core:
 
 ```js
 // example.js
@@ -57,7 +57,7 @@ Installs bitcoin server software to the specified destination
 `string`. Version of the software, e.g. `'0.17.1'`
 
 #### destination
-`string`. An absolute path of an existing directory under which the software will be installed. 
+`string`. An absolute path of an existing directory below which the software will be installed. 
 
 #### changed
 `boolean`. `install` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If `install` actually downloads and extracts the tarball to `destination`, it returns an object with `changed` set to `true`. If `install` finds the software already installed, it returns an object with `changed` set to `false`. This feature was inspired by [Ansible](https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html).
