@@ -76,13 +76,8 @@ This library has a number of unit tests with ~100% coverage. Check out [the test
 
 ## Related
 - [@carnesen/bitcoin-core-cli](https://github.com/carnesen/bitcoin-core-cli): A Node.js command-line interface (CLI) for installing and launching Bitcoin Core
-
 - [@carnesen/bitcoin-abc-cli](https://github.com/carnesen/bitcoin-abc-cli): A Node.js command-line interface (CLI) for installing and launching Bitcoin ABC
-
 - [@carnesen/bitcoin-config](https://github.com/carnesen/bitcoin-config): Node.js constants, utilities, and TypeScript types for bitcoin server software configuration
-
 - [@carnesen/spawn-bitcoind](https://github.com/carnesen/spawn-bitcoind): A Node.js utility for launching bitcoin server software
-
 - [@carnesen/bitcoin-rpc](https://github.com/carnesen/bitcoin-rpc): A Node.js client for bitcoin's remote procedure call (RPC) interface
-
 - [@carnesen/bitcoin-rpc-cli](https://github.com/carnesen/bitcoin-rpc): A Node.js command-line client for bitcoin's remote procedure call (RPC) interface
