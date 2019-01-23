@@ -10,15 +10,37 @@ The package includes runtime JavaScript files suitable for Node.js >=8 as well a
 
 ## Usage
 
-```ts
-import { install } from '@carnesen/bitcoin-software';
+A JavaScript script that installs Bitcoin Core:
 
-install({
-  implementation: 'core',
-  version: '0.17.1',
-  destination: '/usr/local',
+```js
+// example.js
+const { install } = require('@carnesen/bitcoin-software');
+const runAndExit = require('@carnesen/run-and-exit');
+const { homedir } = require('os');
+
+runAndExit(async () => {
+  console.log('Installing Bitcoin Core ...')
+  const { changed, dir } = await install({
+    implementation: 'core',
+    version: '0.17.1',
+    destination: homedir(),
+  });
+  const message = changed 
+    ? `Installed Bitcoin Core to ${dir}`
+    : `Bitcoin Core is already installed at ${dir}`;
+  console.log(message);
 });
-// Now bitcoind can be found in /usr/local/bitcoin-core-0.17.1/bin
+```
+
+Here is the console output when that script is executed:
+```
+$ node example.js
+Installing Bitcoin Core ...
+Installed Bitcoin Core to /Users/carnesen/bitcoin-core-0.17.1
+
+$ node example.js
+Installing Bitcoin Core ...
+Bitcoin Core is already installed at /Users/carnesen/bitcoin-core-0.17.1
 ```
 
 ## API
@@ -38,10 +60,10 @@ Installs bitcoin server software to the specified destination
 `string`. An absolute path of an existing directory under which the software will be installed. 
 
 #### changed
-`boolean`. `install` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If the function finds the software already installed, it returns `changed = false`. If it actually downloads and extracts the tarball to `destination`, it returns `changed = true`.
+`boolean`. `install` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If `install` actually downloads and extracts the tarball to `destination`, it returns an object with `changed` set to `true`. If `install` finds the software already installed, it returns an object with `changed` set to `false`. This feature was inspired by [Ansible](https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html).
 
 #### dir
-`string`. Absolute directory path to which the software is installed. Effectively:
+`string`. Absolute directory path at which the software is installed. Effectively:
 ```ts
 dir = `${destination}/bitcoin-${implementation}-${version}` 
 ```
