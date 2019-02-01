@@ -21,7 +21,6 @@
     "postversion": "npm publish"
   },
   "dependencies": {
-    "@carnesen/usage-error": "0.0.0",
     "@types/download": "6.2.4",
     "@types/mkdirp": "0.5.2",
     "@types/rimraf": "2.0.2",
