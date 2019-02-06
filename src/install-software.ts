@@ -13,7 +13,7 @@ import { getTarballPrefix } from './get-tarball-prefix';
 
 const rimrafAsync = promisify(rimraf);
 
-export async function install(target: Target) {
+export async function installSoftware(target: Target) {
   const { implementation, version, destination } = target;
   const bitcoinHome = getBitcoinHome({ version, implementation, destination });
   if (!existsSync(destination)) {

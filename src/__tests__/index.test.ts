@@ -1,13 +1,13 @@
-import { install } from '../install';
+import { installSoftware } from '../install-software';
 import nock = require('nock');
 import { join, basename } from 'path';
 import * as tempy from 'tempy';
 import { readFileSync, readdirSync } from 'fs';
 import { getBitcoinHome } from '../get-bitcoin-home';
-import { uninstall } from '../uninstall';
+import { uninstallSoftware } from '../uninstall-software';
 import mkdirp = require('mkdirp');
 
-describe(install.name, () => {
+describe(installSoftware.name, () => {
   it('downloads a tarball and extracts it to softwareVersionDir', async () => {
     const destination = tempy.directory();
     const implementation = 'core';
@@ -15,7 +15,7 @@ describe(install.name, () => {
     nock('https://bitcoincore.org/')
       .get(/^\/bin\/bitcoin-core-1.2.3\/bitcoin-1.2.3-.*\.tar\.gz$/)
       .replyWithFile(200, join(__dirname, 'bitcoin-1.2.3.tar.gz'));
-    await install({ implementation, version, destination });
+    await installSoftware({ implementation, version, destination });
     const targetDir = getBitcoinHome({ version, implementation, destination });
     const bitcoindContents = readFileSync(join(targetDir, 'bin', 'bitcoind'), {
       encoding: 'utf8',
@@ -24,7 +24,7 @@ describe(install.name, () => {
   });
 });
 
-describe(uninstall.name, () => {
+describe(uninstallSoftware.name, () => {
   it('rimrafs version directory', async () => {
     const destination = tempy.directory();
     const implementation = 'core';
@@ -32,7 +32,7 @@ describe(uninstall.name, () => {
     const targetDir = getBitcoinHome({ version, implementation, destination });
     mkdirp.sync(targetDir);
     expect(readdirSync(destination)).toEqual([basename(targetDir)]);
-    await uninstall({ version, implementation, destination });
+    await uninstallSoftware({ version, implementation, destination });
     expect(readdirSync(destination)).toEqual([]);
   });
 });

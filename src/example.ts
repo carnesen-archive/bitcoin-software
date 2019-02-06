@@ -1,11 +1,10 @@
 // example.ts
-import { install } from '.';
+import { installSoftware } from '.';
 import { homedir } from 'os';
-import { runAndExit } from '@carnesen/run-and-exit';
 
-runAndExit(async () => {
+(async () => {
   console.log('Installing Bitcoin Core ...');
-  const { changed, bitcoinHome } = await install({
+  const { changed, bitcoinHome } = await installSoftware({
     implementation: 'core',
     version: '0.17.1',
     destination: homedir(),
@@ -14,4 +13,4 @@ runAndExit(async () => {
     ? `Installed Bitcoin Core to ${bitcoinHome}`
     : `Bitcoin Core is already installed at ${bitcoinHome}`;
   console.log(message);
-});
+})();

@@ -6,7 +6,7 @@ import rimraf = require('rimraf');
 import { getBitcoinHome } from './get-bitcoin-home';
 import { Target } from './constants';
 
-export async function uninstall(target: Target) {
+export async function uninstallSoftware(target: Target) {
   const { version, implementation, destination } = target;
   const bitcoinHome = getBitcoinHome({ version, implementation, destination });
   let changed = false;

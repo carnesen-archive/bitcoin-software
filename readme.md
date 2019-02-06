@@ -1,6 +1,6 @@
 # @carnesen/bitcoin-software [![Build Status](https://travis-ci.com/carnesen/bitcoin-software.svg?branch=master)](https://travis-ci.com/carnesen/bitcoin-software)
 
-Node.js utilities for installing bitcoin server software
+A Node.js library for installing bitcoin server software
 
 ## Install
 ```
@@ -10,17 +10,16 @@ The package includes runtime JavaScript files suitable for Node.js >=8 as well a
 
 ## Usage
 
-Here is an example of a TypeScript Node.js script that installs Bitcoin Core:
+Here is an example of a script that installs Bitcoin Core:
 
 ```ts
 // example.ts
-import { install } from '@carnesen/bitcoin-software';
-import { runAndExit } from '@carnesen/run-and-exit';
-import { homedir } from 'os';
+const { installSoftware } = require('@carnesen/bitcoin-software');
+const { homedir } = require('os');
 
-runAndExit(async () => {
+(async () => {
   console.log('Installing Bitcoin Core ...');
-  const { changed, bitcoinHome } = await install({
+  const { changed, bitcoinHome } = await installSoftware({
     implementation: 'core',
     version: '0.17.1',
     destination: homedir(),
@@ -29,10 +28,10 @@ runAndExit(async () => {
     ? `Installed Bitcoin Core to ${bitcoinHome}`
     : `Bitcoin Core is already installed at ${bitcoinHome}`;
   console.log(message);
-});
+})();
 ```
 
-Here is the console output when that script is executed:
+Here what that script looks like when run:
 ```
 $ ts-node example.ts
 Installing Bitcoin Core ...
@@ -47,8 +46,8 @@ The script would be the same in JavaScript just with the `import ... from` state
 
 ## API
 
-### install({implementation, version, destination}): Promise<{changed, bitcoinHome}>
-Installs bitcoin server software to the specified destination
+### Target
+A TypeScript type alias with shape `{implementation, version, destination}`
 
 #### implementation
 `string`. Supported implementations are:
@@ -61,8 +60,14 @@ Installs bitcoin server software to the specified destination
 #### destination
 `string`. An absolute path of an existing directory below which the software will be installed. 
 
+### installSoftware(target): Promise<{changed, bitcoinHome}>
+Downloads and unpacks a tarball of bitcoin server software
+
+#### target
+[`Target`](#target).
+
 #### changed
-`boolean`. `install` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If `install` actually downloads and extracts the tarball to `destination`, it returns an object with `changed` set to `true`. If `install` finds the software already installed, it returns an object with `changed` set to `false`. This feature was inspired by [Ansible](https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html).
+`boolean`. `installSoftware` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If `installSoftware` actually downloads and extracts the tarball to `destination`, it returns an object with `changed` set to `true`. If `install` finds the software already installed, it returns an object with `changed` set to `false`.
 
 #### bitcoinHome
 `string`. Absolute directory path at which the software is installed. Effectively:
@@ -70,14 +75,19 @@ Installs bitcoin server software to the specified destination
 bitcoinHome = `${destination}/bitcoin-${implementation}-${version}` 
 ```
 
-### uninstall({implementation, version, destination}): Promise<{changed, bitcoinHome}>
-Uninstalls bitcoin server software from the specified destination. Parameters and return values are the same as described above for `install`.
+### uninstallSoftware(target): Promise<{changed, bitcoinHome}>
+Uninstalls bitcoin server software from the specified destination. Parameters and return values are the same as described above for `installSoftware`.
 
 ## More information
 This library has a number of unit tests with ~100% coverage. Check out [the tests directory](src/__tests__) for more examples of how it works. If you encounter any bugs or have any questions or feature requests, please don't hesitate to [file an issue](https://github.com/carnesen/bitcoin-software/issues/new) or [submit a pull request](https://github.com/carnesen/bitcoin-software/compare) on [this project's repository on GitHub](https://github.com/carnesen/bitcoin-software).
 
 ## Related
+- [@carnesen/bitcoin-software-cli](https://github.com/carnesen/bitcoin-software-cli): A Node.js command-line interface for managing bitcoin server software
+
 - [@carnesen/bitcoin-config](https://github.com/carnesen/bitcoin-config): A Node.js library for bitcoin server software configuration
+
 - [@carnesen/bitcoind](https://github.com/carnesen/bitcoind): A Node.js library for managing the bitcoin server process `bitcoind`
-- [@carnesen/bitcoin-rpc](https://github.com/carnesen/bitcoin-rpc): A Node.js client for bitcoin's remote procedure call (RPC) interface
-- [@carnesen/bitcoin-rpc-cli](https://github.com/carnesen/bitcoin-rpc): A Node.js command-line client for bitcoin's remote procedure call (RPC) interface
+
+## License
+
+MIT © [Chris Arnesen](https://www.carnesen.com)

@@ -1,3 +1,4 @@
-export { install } from './install';
-export { uninstall } from './uninstall';
-export { Implementation, IMPLEMENTATIONS } from './constants';
+export { Target } from './constants';
+export { installSoftware } from './install-software';
+export { uninstallSoftware } from './uninstall-software';
+export { IMPLEMENTATIONS } from './constants';
