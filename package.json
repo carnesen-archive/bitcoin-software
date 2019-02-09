@@ -1,7 +1,7 @@
 {
   "name": "@carnesen/bitcoin-software",
   "description": "Node.js utilities for installing bitcoin server software",
-  "version": "0.0.0-0",
+  "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "engines": {
