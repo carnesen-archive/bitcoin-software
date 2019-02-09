@@ -46,25 +46,19 @@ The script would be the same in JavaScript just with the `import ... from` state
 
 ## API
 
-### Target
-A TypeScript type alias with shape `{implementation, version, destination}`
+### installSoftware({implementation?, destination?, version?}): Promise<{changed, bitcoinHome}>
+Downloads and unpacks a tarball of bitcoin server software
 
 #### implementation
-`string`. Supported implementations are:
+Optional `string`. Defaults to `'core'`. Supported values:
 - `'core'`: Download from [https://bitcoincore.org/bin/](https://bitcoincore.org/bin/)
 - `'abc'`: Download from [https://download.bitcoinabc.org/](https://download.bitcoinabc.org/)
 
 #### version
-`string`. Version of the software, e.g. `'0.17.1'`
+Optional `string`. Default value is implementation-dependent, e.g. `'0.17.1'` for Bitcoin Core.
 
 #### destination
-`string`. An absolute path of an existing directory below which the software will be installed. 
-
-### installSoftware(target): Promise<{changed, bitcoinHome}>
-Downloads and unpacks a tarball of bitcoin server software
-
-#### target
-[`Target`](#target).
+Optional `string`. Defaults to `'software'`. An absolute or datadir-relative path of a directory below which the software will be installed. 
 
 #### changed
 `boolean`. `installSoftware` is [idempotent](https://en.wikipedia.org/wiki/Idempotence) in the sense that it does not modify an existing installation if there is one, nor does it throw. If `installSoftware` actually downloads and extracts the tarball to `destination`, it returns an object with `changed` set to `true`. If `install` finds the software already installed, it returns an object with `changed` set to `false`.
@@ -75,18 +69,16 @@ Downloads and unpacks a tarball of bitcoin server software
 bitcoinHome = `${destination}/bitcoin-${implementation}-${version}` 
 ```
 
-### uninstallSoftware(target): Promise<{changed, bitcoinHome}>
-Uninstalls bitcoin server software from the specified destination. Parameters and return values are the same as described above for `installSoftware`.
+### uninstallSoftware({implementation?, destination?, version?}): Promise<{changed, bitcoinHome}>
+Uninstalls bitcoin server software from the specified destination. Parameters and return values are the same as described above for [`installSoftware`](#installsoftware) above.
 
 ## More information
 This library has a number of unit tests with ~100% coverage. Check out [the tests directory](src/__tests__) for more examples of how it works. If you encounter any bugs or have any questions or feature requests, please don't hesitate to [file an issue](https://github.com/carnesen/bitcoin-software/issues/new) or [submit a pull request](https://github.com/carnesen/bitcoin-software/compare) on [this project's repository on GitHub](https://github.com/carnesen/bitcoin-software).
 
 ## Related
 - [@carnesen/bitcoin-software-cli](https://github.com/carnesen/bitcoin-software-cli): A Node.js command-line interface for managing bitcoin server software
-
 - [@carnesen/bitcoin-config](https://github.com/carnesen/bitcoin-config): A Node.js library for bitcoin server software configuration
-
-- [@carnesen/bitcoind](https://github.com/carnesen/bitcoind): A Node.js library for managing the bitcoin server process `bitcoind`
+- [@carnesen/bitcoin-service](https://github.com/carnesen/bitcoin-service): A Node.js library for managing the bitcoin server process `bitcoind`
 
 ## License
 

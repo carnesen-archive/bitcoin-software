@@ -34,4 +34,10 @@ describe(getUrl.name, () => {
       getUrl({ implementation: 'core', version: '1.2.3', nodejsPlatform: 'win32' });
     }).toThrow('not yet supported');
   });
+
+  it('throws "implementation" if a bad one is passed', () => {
+    expect(() => {
+      getUrl({ implementation: 'abcd' as 'abc', version: 'foo' });
+    }).toThrow('implementation');
+  });
 });

@@ -6,3 +6,5 @@ export type Target = {
   implementation: Implementation;
   destination: string;
 };
+
+export type PartialTarget = Partial<Target>;
