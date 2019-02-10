@@ -3,12 +3,11 @@ import { platform } from 'os';
 import { Target } from './constants';
 import { getTarballPrefix } from './get-tarball-prefix';
 
-type NamedArgs = Pick<Target, 'version' | 'implementation'> & {
-  nodejsPlatform?: NodeJS.Platform;
-};
-
-export function getUrl(namedArgs: NamedArgs) {
-  const { version, implementation, nodejsPlatform = platform() } = namedArgs;
+export function getUrl(
+  target: Pick<Required<Target>, 'version' | 'implementation'>,
+  nodejsPlatform: NodeJS.Platform = platform(),
+) {
+  const { version, implementation } = target;
   let baseUrl: string;
   let osSeparator: string;
   switch (nodejsPlatform) {

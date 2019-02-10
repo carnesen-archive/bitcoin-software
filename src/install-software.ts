@@ -9,26 +9,29 @@ import mkdirp = require('mkdirp');
 import { getBitcoinHome } from './get-bitcoin-home';
 import { getUrl } from './get-url';
 import { getTarballPrefix } from './get-tarball-prefix';
-import { getTarget } from './get-target';
-import { PartialTarget } from './constants';
+import { withDefaults } from './with-defaults';
+import { Target } from './constants';
 
 const rimrafAsync = promisify(rimraf);
 
-export async function installSoftware(partialTarget: PartialTarget = {}) {
-  const target = getTarget(partialTarget);
-  const bitcoinHome = getBitcoinHome(target);
+export async function installSoftware(target: Target = {}) {
+  const targetWithDefaults = withDefaults(target);
+  const bitcoinHome = getBitcoinHome(targetWithDefaults);
   let changed = false;
   if (!existsSync(bitcoinHome)) {
     changed = true;
     const downloadDir = `${bitcoinHome}.download`;
     await rimrafAsync(downloadDir);
-    const url = getUrl(target);
+    const url = getUrl(targetWithDefaults);
     try {
       await download(url, downloadDir, {
         extract: true,
       });
-      const tarballPrefix = getTarballPrefix(target.implementation);
-      const extractedDir = join(downloadDir, `${tarballPrefix}-${target.version}`);
+      const tarballPrefix = getTarballPrefix(targetWithDefaults.implementation);
+      const extractedDir = join(
+        downloadDir,
+        `${tarballPrefix}-${targetWithDefaults.version}`,
+      );
       await promisify(mkdirp)(dirname(bitcoinHome));
       await promisify(rename)(extractedDir, bitcoinHome);
     } finally {
