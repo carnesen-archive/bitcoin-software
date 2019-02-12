@@ -1,13 +1,13 @@
 import { platform } from 'os';
 
-import { Target } from './constants';
+import { Implementation } from './constants';
 import { getTarballPrefix } from './get-tarball-prefix';
 
 export function getUrl(
-  target: Pick<Required<Target>, 'version' | 'implementation'>,
+  implementation: Implementation,
+  version: string,
   nodejsPlatform: NodeJS.Platform = platform(),
 ) {
-  const { version, implementation } = target;
   let baseUrl: string;
   let osSeparator: string;
   switch (nodejsPlatform) {
