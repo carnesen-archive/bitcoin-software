@@ -4,6 +4,7 @@ import { IMPLEMENTATIONS } from './constants';
 function singleQuote(str: string) {
   return `'${str}'`;
 }
+
 export function toImplementation(maybeImplementation: string) {
   const implementation = maybeImplementation as typeof IMPLEMENTATIONS[number];
   if (!IMPLEMENTATIONS.includes(implementation)) {

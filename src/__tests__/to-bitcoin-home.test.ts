@@ -34,4 +34,9 @@ describe(subject.name, () => {
       expect(subject(...args)).toBe(returnValue);
     });
   }
+  it('throws "absolute path" if provided path is not absolute', () => {
+    expect(() => {
+      subject({ destination: 'foo', implementation: 'core', version: '1.2.3' });
+    }).toThrow('absolute path');
+  });
 });
