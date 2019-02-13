@@ -18,7 +18,7 @@ export function parseBitcoinHome(bitcoinHome: string) {
   if (!isAbsolute(bitcoinHome)) {
     throw new Error('Expected bitcoinHome to be an absolute path');
   }
-  const softwareDir = dirname(bitcoinHome);
+  const destination = dirname(bitcoinHome);
   const bitcoinDir = basename(bitcoinHome);
   const splits = bitcoinDir.split('-');
   if (splits.length < 3) {
@@ -28,5 +28,5 @@ export function parseBitcoinHome(bitcoinHome: string) {
   }
   const version = splits.slice(-1)[0];
   const implementation = toImplementation(splits.slice(1, -1).join('-'));
-  return { softwareDir, implementation, version };
+  return { destination, implementation, version };
 }

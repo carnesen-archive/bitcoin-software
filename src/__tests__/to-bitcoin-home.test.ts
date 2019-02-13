@@ -9,7 +9,7 @@ const data: Data = [
   {
     args: [
       {
-        softwareDir: '/foo/bar',
+        destination: '/foo/bar',
         implementation: 'core',
         version: 'carl',
       },
@@ -19,7 +19,7 @@ const data: Data = [
   {
     args: [
       {
-        softwareDir: '/foo/bar',
+        destination: '/foo/bar',
         implementation: 'abc',
         version: 'carl',
       },
